@@ -1,0 +1,17 @@
+Kill any running Celery processes
+
+pkill -9 celery
+
+Restart Celery Worker
+
+celery -A celery_worker worker --loglevel=info
+export PYTHONPATH=/home/sashank/Desktop/Steps
+celery -A celery_worker worker --loglevel=info --concurrency=4
+celery -A celery_worker beat --loglevel=info
+celery -A celery_worker worker --pool=gevent --loglevel=info --concurrency=4
+
+Multiple Workers Separately
+
+celery -A celery_worker worker --loglevel=info --concurrency=4 --hostname=worker1@%h
+celery -A celery_worker worker --loglevel=info --concurrency=4 --hostname=worker2@%h
+

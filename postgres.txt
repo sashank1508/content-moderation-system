@@ -1,0 +1,116 @@
+1️⃣ Install PostgreSQL
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+
+2️⃣ Start & Enable PostgreSQL
+
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+sudo systemctl status postgresql
+
+3️⃣ Switch to the PostgreSQL User
+
+sudo -i -u postgres
+
+4️⃣ Create a New PostgreSQL User
+
+createuser --interactive --pwprompt
+
+Enter the name of the role: stepsuser
+Enter a password for the new role: stepsai
+Shall the new role be a superuser? y
+
+5️⃣ Create a New Database
+
+createdb stepsdb --owner=stepsuser
+
+6️⃣ Verify That It Works
+
+psql
+List all users: \du
+List all databases: \l
+Exit PostgreSQL: \q
+
+7️⃣ Update Your .env File
+
+DATABASE_URL=postgresql+psycopg2://stepsuser:stepsai@localhost:5432/stepsdb
+
+5️⃣ Apply Database Migrations
+
+alembic init alembic
+Modify alembic.ini: sqlalchemy.url = postgresql+psycopg2://stepsuser:stepsai@localhost:5432/stepsdb
+Modify alembic/env.py to Use Sync Engine 
+
+🔹 Replace This Code
+
+connectable = engine_from_config(
+    config.get_section(config.config_ini_section, {}),
+    prefix="sqlalchemy.",
+    poolclass=pool.NullPool,
+)
+
+✅ Replace It With
+
+from sqlalchemy import create_engine
+
+# Read database URL from alembic.ini
+DATABASE_URL = config.get_main_option("sqlalchemy.url")
+
+# ✅ Use a synchronous SQLAlchemy engine (psycopg2)
+connectable = create_engine(DATABASE_URL, poolclass=pool.NullPool)
+
+Modify alembic/env.py:
+
+Find this line:
+target_metadata = None
+
+Replace it with:
+from models import Base
+target_metadata = Base.metadata
+
+🔧 Fix: Open pg_hba.conf in VS Code
+sudo code --no-sandbox --user-data-dir="~/.vscode-root" /etc/postgresql/16/main/pg_hba.conf
+
+What to Change in pg_hba.conf
+Before editing:
+local   all             postgres                                peer
+local   all             all                                     peer
+host    all             all             127.0.0.1/32            scram-sha-256
+host    all             all             ::1/128                 scram-sha-256
+local   replication     all                                     peer
+host    replication     all             127.0.0.1/32            scram-sha-256
+host    replication     all             ::1/128                 scram-sha-256
+
+Update it to use scram-sha-256
+# Database administrative login by Unix domain socket
+local   all             postgres                                peer
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# Use scram-sha-256 for local authentication
+local   all             all                                     scram-sha-256
+
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            scram-sha-256
+
+# IPv6 local connections:
+host    all             all             ::1/128                 scram-sha-256
+
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     scram-sha-256
+host    replication     all             127.0.0.1/32            scram-sha-256
+host    replication     all             ::1/128                 scram-sha-256
+
+4️⃣ Restart PostgreSQL:
+sudo systemctl restart postgresql
+
+Run migrations:
+alembic revision --autogenerate -m "Initial migration"
+alembic upgrade head
+
+If you update your models.py, run:
+alembic revision --autogenerate -m "Updated schema"
+alembic upgrade head
+
+

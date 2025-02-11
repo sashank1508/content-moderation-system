@@ -1,0 +1,12 @@
+# Use Python base image
+FROM python:3.10
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install -r requirements.txt
+
+# Run Celery Worker with Gevent & Concurrency 4
+CMD ["celery", "-A", "celery_worker", "worker", "--pool=gevent", "--loglevel=info", "--concurrency=4"]

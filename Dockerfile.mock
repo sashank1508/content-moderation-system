@@ -1,0 +1,15 @@
+# Use Python base image
+FROM python:3.10
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install -r requirements.txt
+
+# Expose Mock API port
+EXPOSE 8080
+
+# Run mock API
+CMD ["python3", "mock.py"]

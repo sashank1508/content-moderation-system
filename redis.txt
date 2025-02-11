@@ -1,0 +1,27 @@
+Install Redis
+
+Run the following command to install Redis:
+
+                                            sudo apt install redis-server
+
+Once installed, start the Redis service:
+
+                                            sudo systemctl start redis
+
+To enable Redis to start automatically on system boot, run:
+
+                                            sudo systemctl enable redis-server
+
+Restart Redis to apply changes:
+
+                                            sudo systemctl restart redis-server
+
+Check Redis status to ensure it is active:
+
+                                            sudo systemctl status redis-server
+
+Test Redis Connection
+
+                                            redis-cli ping
+
+Output: PONG

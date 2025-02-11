@@ -1,0 +1,25 @@
+fastapi
+uvicorn
+openai
+pydantic
+python-dotenv
+fastapi-limiter
+redis
+celery
+asgiref
+gevent
+sqlalchemy
+asyncpg
+alembic
+# sudo apt install libpq-dev
+psycopg2
+# sudo apt install postgresql postgresql-contrib
+python-multipart
+structlog
+prometheus-client
+pytest
+pytest-asyncio
+httpx
+pytest-cov
+# sudo apt install mypy
+locust
